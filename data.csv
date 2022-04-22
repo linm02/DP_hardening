@@ -1,0 +1,4 @@
+hive,path,value,type,data
+HKLM,SOFTWARE\Policies\Microsoft\Windows\System\test,DontDisplayNetworkSelectionUI,DWord,1
+HKLM,SOFTWARE\Policies\Microsoft\Windows\System\test,AllowDomainPINLogon,DWord,0
+HKLM,SOFTWARE\Policies\Microsoft\Windows\System\test\test,blabla,String,fdfdfdfs
