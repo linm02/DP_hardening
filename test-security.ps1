@@ -1,6 +1,22 @@
 
-#(Get-WinUserLanguageList)[1].LocalizedName
+echo y | C:\Windows\System32\secedit.exe /configure /db .\secedit.sdb /cfg .\sec-export3.inf /overwrite
 
-#auditpol /list /subcategory:* /r
+rm .\secedit.jfm
+rm .\secedit.sdb
 
-/Windows/System32/auditpol.exe /set /subcategory:"{0CCE921D-69AE-11D9-BED3-505054503030}" /success:disable /failure:disable
+
+
+
+
+
+# cp .\sec-export3.inf C:\Windows\System32
+
+
+# cd C:\Windows\System32
+
+# echo y | secedit /configure /db secedit.sdb /cfg sec-export3.inf /overwrite
+
+# rm .\secedit.jfm
+# rm .\secedit.sdb
+
+# cd C:\git\DP_hardening
