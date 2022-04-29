@@ -1,4 +1,27 @@
 
+#============================================
+# Functions
+#============================================
+
+Function LogStd {
+	Param ($message)
+	echo "$message" 1>>"$logfullpath"
+}
+
+Function Print-Options {
+	echo "ANO - 1"
+	echo "NE - 2"
+}
+
+Function Print-PromptText {
+	Param ($question)
+	echo "Nespravny vstup!"
+	echo "$question"
+	Print-Options
+}
+
+
+
 ##############################################
 ### CLI Dialog
 ##############################################
@@ -17,24 +40,17 @@
 $files = @()
 $files += ,".\sec.csv"
 
-$runSuccessful = "true"
+$runSuccessful = $true
 
 
 ### Otazka 1
 echo "Prejete si pridata data? - Zvolte cislo"
-echo "ano - 1"
-echo "ne - 2"
+Print-Options
 
 $prompt = Read-Host "Vlozte cislo"
 
 while (!($prompt -eq "1" -Or $prompt -eq "2")) {
-
-	echo "Nespravny vstup!"
-	
-	echo "Prejete si pridata data? - Zvolte cislo"
-	echo "ano - 1"
-	echo "ne - 2"
-
+	Print-PromptText "Prejete si pridata data? - Zvolte cislo"
 	$prompt = Read-Host "Vlozte cislo"
 }
 
@@ -45,19 +61,12 @@ if ($prompt -eq "1") {
 
 ### Otazka 2
 echo "Prejete si pridat bigmoney? - Zvolte cislo"
-echo "ano - 1"
-echo "ne - 2"
+Print-Options
 
 $prompt = Read-Host "Vlozte cislo"
 
 while (!($prompt -eq "1" -Or $prompt -eq "2")) {
-
-	echo "Nespravny vstup!"
-	
-	echo "Prejete si pridat bigmoney? - Zvolte cislo"
-	echo "ano - 1"
-	echo "ne - 2"
-
+	Print-PromptText  "Prejete si pridat bigmoney? - Zvolte cislo"
 	$prompt = Read-Host "Vlozte cislo"
 }
 
@@ -135,7 +144,7 @@ $files | ForEach-Object {
 	$data = Import-Csv -Path "$_"
 
 	echo "#####################################"
-	echo ">  Aplikuji klíče registrů ze souboru $_, muze to chvili trvat..."
+	echo ">  Aplikuji klice registru ze souboru $_, muze to chvili trvat..."
 	echo "#####################################"
 	echo "..."
 
@@ -157,35 +166,27 @@ $files | ForEach-Object {
 				"exists"
 				if ($CurrentValueData -ne $ValueData) {
 					"wrong value"
-					echo "Nastavuji klic $RegPath $ValueName typu $ValueType na hodnotu $ValueData" 1>>"$logfullpath"
+					LogStd "Nastavuji klic $RegPath $ValueName typu $ValueType na hodnotu $ValueData"
 					
 					Set-ItemProperty -Path "$RegPath" -Name "$ValueName" -Value "$ValueData" 2>&1 1>>"$logfullpath"
-					if (!$?) {
-						$runSuccessful = "false"
-					}
+					$runSuccessful = $?
 				}
 			} else {
 				"does not exist - no value"
-				echo "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData" 1>>"$logfullpath"
+				LogStd "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData"
 				
 				New-ItemProperty -Path "$RegPath" -Name "$ValueName" -PropertyType "$ValueType" -Value "$ValueData" 2>&1 1>>"$logfullpath"
-				if (!$?) {
-					$runSuccessful = "false"
-				}
+				$runSuccessful = $?
 			}
 		} else {
 			"Path does not exist"
-			echo "Vytvarim cestu $RegPath" 1>>"$logfullpath"
-			echo "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData" 1>>"$logfullpath"
+			LogStd "Vytvarim cestu $RegPath"
+			LogStd "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData"
 			
 			New-Item -Path "$RegPath" -Force 2>&1 1>>"$logfullpath"
-			if (!$?) {
-				$runSuccessful = "false"
-			}
+			$runSuccessful = $?
 			New-ItemProperty -Path "$RegPath" -Name "$ValueName" -PropertyType "$ValueType" -Value "$ValueData" 2>&1 1>>"$logfullpath"
-			if (!$?) {
-				$runSuccessful = "false"
-			}
+			$runSuccessful = $?
 		}
 	}
 }
@@ -214,10 +215,19 @@ echo ">  Aplikuji bezpecnostni nastaveni"
 echo "#####################################"
 echo "..."
 
-if ($runSuccessful -eq "true") {
-	
+if ($runSuccessful) {
 	echo "#####################################"
-	echo ">  Skript dokoncen, dekujeme za pouziti, zaznam o behu najdete v souboru $logfilename"
+	echo ">  Skript uspesne dokoncen, dekujeme za pouziti, zaznam o behu najdete v souboru .\logs\$logfilename"
 } else {
-	echo "run failed"
+	echo "#####################################"
+	echo ">  Pri behu skriptu se vyskytly chyby, detaily najdete v souboru .\logs\$logfilename"
 }
+
+
+# Function Set-RunStatus {
+	# Param ($LastCmdResult)
+	# if (!$LastCmdResult) {
+		# $runSuccessful = $false
+	# }
+# }
+
