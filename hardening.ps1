@@ -6,7 +6,8 @@
 #Get-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI -ErrorAction "SilentlyContinue"
 # Get-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI 2>$null
 
-$files = ".\data.csv",".\test.csv",".\bigmoney.csv"
+# $files = ".\data.csv",".\test.csv",".\bigmoney.csv"
+$files = ".\sec.csv"
 
 # ForEach ($file in $files) {
 $files | ForEach-Object {
