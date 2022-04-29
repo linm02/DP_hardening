@@ -13,8 +13,11 @@
 
 # $files = ".\data.csv",".\test.csv",".\bigmoney.csv"
 # $files = ".\data.csv",".\test.csv"
-$files = ".\sec.csv"
 
+$files = @()
+$files += ,".\sec.csv"
+
+$runSuccessful = "true"
 
 
 ### Otazka 1
@@ -36,7 +39,7 @@ while (!($prompt -eq "1" -Or $prompt -eq "2")) {
 }
 
 if ($prompt -eq "1") {
-	$files += ".\data.csv"
+	$files += ,".\data.csv"
 }
 
 
@@ -59,7 +62,7 @@ while (!($prompt -eq "1" -Or $prompt -eq "2")) {
 }
 
 if ($prompt -eq "1") {
-	$files += ".\bigmoney.csv"
+	$files += ,".\bigmoney.csv"
 }
 
 
@@ -132,7 +135,7 @@ $files | ForEach-Object {
 	$data = Import-Csv -Path "$_"
 
 	echo "#####################################"
-	echo "  Aplikuji klíče registrů ze souboru $_, muze to chvili trvat..."
+	echo ">  Aplikuji klíče registrů ze souboru $_, muze to chvili trvat..."
 	echo "#####################################"
 	echo "..."
 
@@ -156,21 +159,33 @@ $files | ForEach-Object {
 					"wrong value"
 					echo "Nastavuji klic $RegPath $ValueName typu $ValueType na hodnotu $ValueData" 1>>"$logfullpath"
 					
-					Set-ItemProperty -Path "$RegPath" -Name "$ValueName" -Value "$ValueData"
+					Set-ItemProperty -Path "$RegPath" -Name "$ValueName" -Value "$ValueData" 2>&1 1>>"$logfullpath"
+					if (!$?) {
+						$runSuccessful = "false"
+					}
 				}
 			} else {
 				"does not exist - no value"
 				echo "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData" 1>>"$logfullpath"
 				
-				New-ItemProperty -Path "$RegPath" -Name "$ValueName" -PropertyType "$ValueType" -Value "$ValueData" 1>>"$logfullpath"
+				New-ItemProperty -Path "$RegPath" -Name "$ValueName" -PropertyType "$ValueType" -Value "$ValueData" 2>&1 1>>"$logfullpath"
+				if (!$?) {
+					$runSuccessful = "false"
+				}
 			}
 		} else {
 			"Path does not exist"
 			echo "Vytvarim cestu $RegPath" 1>>"$logfullpath"
 			echo "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData" 1>>"$logfullpath"
 			
-			New-Item -Path "$RegPath" -Force
-			New-ItemProperty -Path "$RegPath" -Name "$ValueName" -PropertyType "$ValueType" -Value "$ValueData"
+			New-Item -Path "$RegPath" -Force 2>&1 1>>"$logfullpath"
+			if (!$?) {
+				$runSuccessful = "false"
+			}
+			New-ItemProperty -Path "$RegPath" -Name "$ValueName" -PropertyType "$ValueType" -Value "$ValueData" 2>&1 1>>"$logfullpath"
+			if (!$?) {
+				$runSuccessful = "false"
+			}
 		}
 	}
 }
@@ -180,7 +195,7 @@ $files | ForEach-Object {
 ##############################################
 
 echo "#####################################"
-echo "  Aplikuji audit policy"
+echo ">  Aplikuji audit policy"
 echo "#####################################"
 echo "..."
 
@@ -195,10 +210,14 @@ echo "..."
 ##############################################
 
 echo "#####################################"
-echo "  Aplikuji bezpecnostni nastaveni"
+echo ">  Aplikuji bezpecnostni nastaveni"
 echo "#####################################"
 echo "..."
 
-
-echo "#####################################"
-echo " Skript ukoncen, dekujeme za pouziti, zaznam o behu najdete v souboru $logfilename"
+if ($runSuccessful -eq "true") {
+	
+	echo "#####################################"
+	echo ">  Skript dokoncen, dekujeme za pouziti, zaznam o behu najdete v souboru $logfilename"
+} else {
+	echo "run failed"
+}

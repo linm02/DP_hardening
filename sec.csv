@@ -1,2 +1,3 @@
 hive,path,value,type,data
 HKLM,SYSTEM\CurrentControlSet\Control\Lsa,NoLMHash,DWord,1
+HKLM,SYSTEM\CurrentControlSet\Control\Lsa,NofdfLMHash,DWord,1
