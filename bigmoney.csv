@@ -1,7 +1,7 @@
 hive,path,value,type,data
-HKLM,Software\Policies\Microsoft\Internet Explorer\PhishingFilter,PreventOverrideAppRepUnknown,DWord,1
+HKLM,Software\Policies\Microsoft\Internet Explorer\PhishingFilter,PreventOverridedsAppRepUnknown,DWord,1
 HKLM,Software\Policies\Microsoft\Internet Explorer\PhishingFilter,EnabledV9,DWord,1
-HKLM,Software\Policies\Microsoft\Internet Explorer\Security\ActiveX,BlockNonAdminActiveXInstall,DWord,1
+HKLM,Software\Policies\Microsoft\Internet Explorer\Security\ActiveX,BlockNonAdmisdsdnActiveXInstall,DWord,1
 HKLM,Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings,Security_zones_map_edit,DWord,1
 HKLM,Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings,Security_options_edit,DWord,1
 HKLM,Software\Policies\Microsoft\Windows\CurrentVersion\Internet Settings,Security_HKLM_only,DWord,1
