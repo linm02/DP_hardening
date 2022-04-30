@@ -1,0 +1,6 @@
+"Name","Status","StartType"
+"WinRM","Stopped","Manual"
+"XblAuthManager","Stopped","Disabled"
+"XblGameSave","Stopped","Disabled"
+"XboxNetApiSvc","Stopped","Disabled"
+"XboxGipSvc","Stopped","Disabled"
