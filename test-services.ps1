@@ -27,3 +27,5 @@ $services | ForEach-Object {
 # Set-Service -Name "$ServiceName " -Status "$Status" -StartupType "$StartupType"
 
 #TODO doplnit dalsi services a pridat je do finalniho skriptu
+
+# HKLM:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription	EnableInvocationHeader

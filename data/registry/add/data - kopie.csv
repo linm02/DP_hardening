@@ -1,0 +1,5 @@
+hive,path,value,type,data
+"HKLM",SOFTWARE\Policies\Microsoft\Windows\System\test,DontDplafysdsNetworkSeledctionUIs,DWord,1
+"HKLM",SOFTWARE\Policies\Microsoft\Windows\System\test,AlaindddPINLodsddgond,DWord,0
+"HKLM",SOFTWARE\Policies\Microsoft\Windows\System\test\test,bdlasddsdddsdsdsbla,String,fdfdfdfs
+"HKLM","Software\Classes\batfile\shell\runasuser","SuppressionPolicy","DWord","4096"
