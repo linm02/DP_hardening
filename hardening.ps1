@@ -69,6 +69,16 @@ $files += ,"sec.csv"
 
 $runSuccessful = $true
 
+#### Uvitani
+
+
+echo "..."
+echo "#############################################"
+echo ">  Spoustite skript pro hardening Windows"
+echo "#############################################"
+echo "..."
+
+
 ##############################################
 ### CLI Dialog
 ##############################################
@@ -167,10 +177,11 @@ $deleteFile = "test.csv"
 
 $data = Import-Csv -Path "$RegistryDeletePath$deleteFile"
 
-	echo "#####################################"
-	echo ">  Mazu klice registru ze souboru $_"
-	echo "#####################################"
-	echo "..."
+echo "..."
+echo "#####################################"
+echo ">  Mazu klice registru ze souboru $_"
+echo "#####################################"
+echo "..."
 
 $data | ForEach-Object {
 	
@@ -204,6 +215,7 @@ $files | ForEach-Object {
 	# $data = Import-Csv -Path .\data.csv
 	$data = Import-Csv -Path "$RegistryAddPath$_"
 
+	echo "..."
 	echo "#####################################"
 	echo ">  Aplikuji klice registru ze souboru $_, muze to chvili trvat..."
 	echo "#####################################"
@@ -261,14 +273,15 @@ $AuditBackupFilename = "backup-$date-$guid.txt"
 
 $data = Import-Csv -Path "$AuditAddPath$auditFile"
 
-	echo "#####################################"
-	echo ">  Aplikuji audit policy"
-	echo "#####################################"
-	echo "..."
+echo "..."
+echo "#####################################"
+echo ">  Aplikuji audit policy"
+echo "#####################################"
+echo "..."
 
- auditpol /get /category:* /r > ".\backups\audit\$AuditBackupFilename"
- echo "> Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
- LogStd "Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
+auditpol /get /category:* /r > ".\backups\audit\$AuditBackupFilename"
+echo "> Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
+LogStd "Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
 
 $data | ForEach-Object {
 	
@@ -287,6 +300,7 @@ $data | ForEach-Object {
 ### Nastaveni systemovych sluzeb
 ##############################################
 
+echo "..."
 echo "#####################################"
 echo ">  Nastavuji systemove sluzby"
 echo "#####################################"
@@ -333,6 +347,7 @@ $services | ForEach-Object {
 ##############################################
 
 
+echo "..."
 echo "#####################################"
 echo ">  Aplikuji bezpecnostni nastaveni"
 echo "#####################################"
