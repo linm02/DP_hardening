@@ -38,7 +38,8 @@ Function Print-PromptText {
 # $files = ".\data.csv",".\test.csv"
 
 $files = @()
-$files += ,".\sec.csv"
+# $files += ,".\sec.csv"
+$files += ,".\multistring.csv"
 
 $runSuccessful = $true
 
