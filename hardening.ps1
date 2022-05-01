@@ -37,9 +37,15 @@ Function Print-PromptText {
 # $files = ".\data.csv",".\test.csv",".\bigmoney.csv"
 # $files = ".\data.csv",".\test.csv"
 
+$RegistryAddPath = ".\data\registry\add\"
+$SecAddPath = ".\data\registry\add\"
+$AuditAddPath = ".\data\audit\"
+$RegistryAddPath = ".\data\registry\add\"
+$RegistryDeletePath = ".\data\registry\delete\"
+
 $files = @()
-# $files += ,".\sec.csv"
-$files += ,".\multistring.csv"
+$files += ,"sec.csv"
+# $files += ,"multistring.csv"
 
 $runSuccessful = $true
 
@@ -56,7 +62,7 @@ while (!($prompt -eq "1" -Or $prompt -eq "2")) {
 }
 
 if ($prompt -eq "1") {
-	$files += ,".\data.csv"
+	$files += ,"data.csv"
 }
 
 
@@ -72,7 +78,7 @@ while (!($prompt -eq "1" -Or $prompt -eq "2")) {
 }
 
 if ($prompt -eq "1") {
-	$files += ,".\bigmoney.csv"
+	$files += ,"bigmoney.csv"
 }
 
 
@@ -126,12 +132,6 @@ if ($prompt -eq "1") {
 # }
 
 
-
-
-##############################################
-### Nastaveni regsitry klicu
-##############################################
-
 ### logfile
 $guid = New-Guid
 $date = Get-Date -Format "dd-MM-yy"
@@ -139,10 +139,51 @@ $date = Get-Date -Format "dd-MM-yy"
 $logfilename = "log-$date-$guid.txt"
 $logfullpath = "./logs/log-$date-$guid.txt"
 
+
+##############################################
+### Smazani regsitry klicu
+##############################################
+
+$deleteFile = "test.csv"
+
+$data = Import-Csv -Path "$RegistryDeletePath$deleteFile"
+
+	echo "#####################################"
+	echo ">  Mazu klice registru ze souboru $_"
+	echo "#####################################"
+	echo "..."
+
+$data | ForEach-Object {
+	
+	$RegPath = "$($_.hive):\$($_.path)"
+	$ValueName = "$($_.value)"
+
+	if (Test-Path "$RegPath") {
+		$LastKey = Get-Item -LiteralPath $RegPath
+		
+		$CurrentValueData = $LastKey.GetValue($ValueName)
+		
+		if ($CurrentValueData -ne $null) {
+			"exists"
+			LogStd "Mazu klic $RegPath $ValueName"
+			Remove-ItemProperty -Path "$RegPath" -Name "$ValueName" 2>&1 1>>"$logfullpath"
+			$runSuccessful = $?
+		} else {
+			LogStd "Klic $RegPath $ValueName neexistuje"
+			"Klic $RegPath $ValueName uz neexistuje"
+		}
+	}
+}
+
+##############################################
+### Nastaveni regsitry klicu
+##############################################
+
+
 # ForEach ($file in $files) {
 $files | ForEach-Object {
 	# $data = Import-Csv -Path .\data.csv
-	$data = Import-Csv -Path "$_"
+	$data = Import-Csv -Path "$RegistryAddPath$_"
 
 	echo "#####################################"
 	echo ">  Aplikuji klice registru ze souboru $_, muze to chvili trvat..."
@@ -196,16 +237,58 @@ $files | ForEach-Object {
 ### Aplikace audit policy
 ##############################################
 
+$auditFile = "test.csv"
+$AuditBackupFilename = "backup-$date-$guid.txt"
+
+$data = Import-Csv -Path "$AuditAddPath$auditFile"
+
+	echo "#####################################"
+	echo ">  Aplikuji audit policy"
+	echo "#####################################"
+	echo "..."
+
+ auditpol /get /category:* /r > ".\backups\audit\$AuditBackupFilename"
+ echo "Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
+ LogStd "Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
+
+$data | ForEach-Object {
+	
+	$Subcategory = "$($_.subcategory)"
+	$Failure = "$($_.failure)"
+	$Success = "$($_.success)"
+
+	auditpol /set /subcategory:"$Subcategory" /success:"$Success" /failure:"$Failure" 2>&1 1>>"$logfullpath"
+
+	LogStd "Nastavuji audit pro subkategorii: $Subcategory"
+}
+
+
+##############################################
+### Nastaveni systemovych sluzeb
+##############################################
+
 echo "#####################################"
-echo ">  Aplikuji audit policy"
+echo ">  Nastavuji systemove sluzby"
 echo "#####################################"
 echo "..."
 
-# if ($?) {
-	# "Command successful"
-# } else {
-	# "Command failed"
-# }
+$ServicesBackupFilename = ".\backups\services\services_backup-$date-$guid.csv"
+
+$services = Import-Csv -Path ".\data\services\services.csv"
+
+$services | ForEach-Object {
+		
+	$ServiceName = "$($_.Name)"
+	$Status = "$($_.Status)"
+	$StartupType = "$($_.StartType)"
+	
+	LogStd "Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
+	echo "Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
+	Get-Service "$ServiceName" | select name,Status,StartType | Export-Csv -Path "$ServicesBackupFilename" -NoTypeInformation -Append
+	
+	Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType" 
+}
+
 
 ##############################################
 ### Aplikace security policy

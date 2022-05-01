@@ -1,3 +1,6 @@
 # Default ignored files
 
-/logs/
+/logs/log*
+/backups/services/ser*
+/backups/audit/back*
+/backups/security/sec*
