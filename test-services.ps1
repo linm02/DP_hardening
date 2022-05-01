@@ -10,7 +10,7 @@
 $guid = New-Guid
 $date = Get-Date -Format "dd-MM-yy"
 
-$services = Import-Csv -Path ".\data\services.csv"
+$services = Import-Csv -Path ".\data\services\services_final.csv"
 
 $services | ForEach-Object {
 		
@@ -18,9 +18,24 @@ $services | ForEach-Object {
 	$Status = "$($_.Status)"
 	$StartupType = "$($_.StartType)"
 	
-	Get-Service "$ServiceName" | select name,Status,StartType | Export-Csv -Path ".\backups\services\services_backup-$date-$guid.csv" -NoTypeInformation -Append
+	Get-Service "$ServiceName" 2>&1 1> $null
+	$Exists = $?
 	
-	Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+	if ($Exists) { 	
+		"zalohuji"
+		Get-Service "$ServiceName" | select name,Status,StartType | Export-Csv -Path ".\backups\services\services_backup-$date-$guid.csv" -NoTypeInformation -Append
+		
+		#Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+		# Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+		
+		if ("$StartupType" -eq "disabled") {
+			Get-Service -Name "$ServiceName" | Stop-Service
+			"zastavuji"
+		} else {
+			Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+			"zapinam"
+		}
+	}
 }
 
 

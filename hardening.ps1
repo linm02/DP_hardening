@@ -23,10 +23,6 @@ Function Print-PromptText {
 	Print-Options
 }
 
-##############################################
-### CLI Dialog
-##############################################
-
 # $ErrorActionPreference= 'silentlycontinue'
 # Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI
 # Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name AllowDomainPINLogon -ErrorAction 'silentlycontinue'
@@ -38,15 +34,28 @@ Function Print-PromptText {
 # $files = ".\data.csv",".\test.csv",".\bigmoney.csv"
 # $files = ".\data.csv",".\test.csv"
 
+
+##########################################
+### VARIABLES
+##########################################
+
 $q1PromptA = "Pouzivate aktivne PowerShell ke tvorbe skriptu nebo pouzivat jine vyvojarske nastroje? - Zvolte cislo"
 $q1PromptB = "Pokud zvolite ano, bude nastavena volnejsi politika pro spousteni skriptu"
 $q2PromptA = "Je toto zarizeni samostatnou jednoucelovou pracovni stanici? - Zvolte cislo"
 $q2PromptB = "Pokud zvolite ano, bude zakazan mikrofon, kamera a vsechna prenosna zarizeni"
 
-
-
 $path = pwd
 $workdir = $path.Path
+
+
+### logfile
+$guid = New-Guid
+$date = Get-Date -Format "dd-MM-yy"
+
+$logfilename = "log-$date-$guid.txt"
+$logfullpath = "$workdir/logs/log-$date-$guid.txt"
+
+
 
 $RegistryAddPath = ".\data\registry\add\"
 $SecAddPath = ".\data\registry\add\"
@@ -59,6 +68,10 @@ $files += ,"sec.csv"
 # $files += ,"multistring.csv"
 
 $runSuccessful = $true
+
+##############################################
+### CLI Dialog
+##############################################
 
 
 ### Otazka 1
@@ -144,13 +157,6 @@ if ($prompt -eq "1") {
 	# $files += ".\smallmoney.csv"
 # }
 
-
-### logfile
-$guid = New-Guid
-$date = Get-Date -Format "dd-MM-yy"
-
-$logfilename = "log-$date-$guid.txt"
-$logfullpath = "$workdir/logs/log-$date-$guid.txt"
 
 
 ##############################################
@@ -296,14 +302,29 @@ $services | ForEach-Object {
 	$Status = "$($_.Status)"
 	$StartupType = "$($_.StartType)"
 	
-	LogStd "Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
-	echo "> Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
-	Get-Service "$ServiceName" | select name,Status,StartType | Export-Csv -Path "$ServicesBackupFilename" -NoTypeInformation -Append
-	$runSuccessful = $?
+	Get-Service "$ServiceName" 2>&1 1> $null
+	$Exists = $?
 	
-	LogStd "Nastavuji startup typ sluzby $ServiceName na $StartupType"
-	Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
-	$runSuccessful = $?
+	if ($Exists) { 	
+		
+		LogStd "Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
+		echo "> Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
+		Get-Service "$ServiceName" | select name,Status,StartType | Export-Csv -Path "$ServicesBackupFilename" -NoTypeInformation -Append
+		$runSuccessful = $?
+		
+		#Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+		# Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+		
+		LogStd "Nastavuji startup typ sluzby $ServiceName na $StartupType"
+		
+		if ("$StartupType" -eq "disabled") {
+			Get-Service -Name "$ServiceName" | Stop-Service
+			$runSuccessful = $?
+		} else {
+			Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+			$runSuccessful = $?
+		}
+	}
 }
 
 
@@ -345,11 +366,17 @@ rm -r "$TmpDir"
 ###################################################
 
 if ($runSuccessful) {
+	echo "#"
+	echo "#"
+	echo "#"
 	echo "#####################################"
 	echo ">  Skript uspesne dokoncen, dekujeme za pouziti, zaznam o behu najdete v souboru .\logs\$logfilename"
 	echo ">  Pro aplikovani vsech nastaveni by mel byt pocitac nyni restartovan"
 	echo "#####################################"
 } else {
+	echo "#"
+	echo "#"
+	echo "#"
 	echo "#####################################"
 	echo ">  Pri behu skriptu se vyskytly chyby, detaily najdete v souboru .\logs\$logfilename"
 	echo "#####################################"

@@ -1,9 +1,4 @@
 "Name","Status","StartType"
-"WinRM","Stopped","Manual"
-XblAuthManager,stopped,disabled
-XblGameSave,stopped,disabled
-XboxNetApiSvc,stopped,disabled
-XboxGipSvc,stopped,disabled
 "irmon","stopped","disabled"
 "AppIDSvc","stopped","disabled"
 "Browser","stopped","disabled"
