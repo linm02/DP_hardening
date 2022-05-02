@@ -3,6 +3,10 @@
 # Functions
 #============================================
 
+param(
+    [string[]]$csvs
+)
+
 Function LogStd {
 	Param ($message)
 	echo "$message" 1>>"$logfullpath"
@@ -63,60 +67,70 @@ $AuditAddPath = ".\data\audit\"
 $RegistryAddPath = ".\data\registry\add\"
 $RegistryDeletePath = ".\data\registry\delete\"
 
-$files = @()
-$files += ,"sec.csv"
-# $files += ,"multistring.csv"
-
 $runSuccessful = $true
 
-#### Uvitani
+##################################
+# pokrocily mod preskoci cely CLI Dialog a pouzije pro nove registry klice argumenty jako csv
+##################################
+
+if ($csvs -eq $null) {
+	
+	$files = @()
+	$files += ,"sec.csv"
+	# $files += ,"multistring.csv"
 
 
-echo "..."
-echo "#############################################"
-echo ">  Spoustite skript pro hardening Windows"
-echo "#############################################"
-echo "..."
+	#### Uvitani
 
 
-##############################################
-### CLI Dialog
-##############################################
+	echo "..."
+	echo "#############################################"
+	echo ">  Spoustite skript pro hardening Windows"
+	echo "#############################################"
+	echo "..."
 
 
-### Otazka 1
-echo "$q1PromptA"
-echo "$q1PromptB"
-Print-Options
+	##############################################
+	### CLI Dialog
+	##############################################
 
-$prompt = Read-Host "Vlozte cislo"
 
-while (!($prompt -eq "1" -Or $prompt -eq "2")) {
-	Print-PromptText "$q1PromptA","$q1PromptB"
+	### Otazka 1
+	echo "$q1PromptA"
+	echo "$q1PromptB"
+	Print-Options
+
 	$prompt = Read-Host "Vlozte cislo"
-}
 
-if ($prompt -eq "1") {
-	$files += ,"dev.csv"
+	while (!($prompt -eq "1" -Or $prompt -eq "2")) {
+		Print-PromptText "$q1PromptA","$q1PromptB"
+		$prompt = Read-Host "Vlozte cislo"
+	}
+
+	if ($prompt -eq "1") {
+		$files += ,"dev.csv"
+	} else {
+		$files += ,"no-dev.csv"
+	}
+
+
+	### Otazka 2
+	echo "$q2PromptA"
+	echo "$q2PromptB"
+	Print-Options
+
+	$prompt = Read-Host "Vlozte cislo"
+
+	while (!($prompt -eq "1" -Or $prompt -eq "2")) {
+		Print-PromptText "$q2PromptA","$q2PromptB"
+		$prompt = Read-Host "Vlozte cislo"
+	}
+
+	if ($prompt -eq "1") {
+		$files += ,"solo-workstation.csv"
+	}
 } else {
-	$files += ,"no-dev.csv"
-}
-
-
-### Otazka 2
-echo "$q2PromptA"
-echo "$q2PromptB"
-Print-Options
-
-$prompt = Read-Host "Vlozte cislo"
-
-while (!($prompt -eq "1" -Or $prompt -eq "2")) {
-	Print-PromptText "$q2PromptA","$q2PromptB"
-	$prompt = Read-Host "Vlozte cislo"
-}
-
-if ($prompt -eq "1") {
-	$files += ,"solo-workstation.csv"
+	$files = $csvs
 }
 
 ##############################################
