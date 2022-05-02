@@ -27,16 +27,6 @@ Function Print-PromptText {
 	Print-Options
 }
 
-# $ErrorActionPreference= 'silentlycontinue'
-# Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI
-# Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name AllowDomainPINLogon -ErrorAction 'silentlycontinue'
-
-# Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI -ErrorAction 'silentlycontinue'
-#Get-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI -ErrorAction "SilentlyContinue"
-# Get-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI 2>$null
-
-# $files = ".\data.csv",".\test.csv",".\bigmoney.csv"
-# $files = ".\data.csv",".\test.csv"
 
 
 ##########################################
@@ -83,8 +73,7 @@ echo "..."
 if ($csvs -eq $null) {
 	
 	$files = @()
-	$files += ,"sec.csv"
-	# $files += ,"multistring.csv"
+	$files += ,"final_reg.csv"
 
 
 	##############################################
@@ -105,7 +94,7 @@ if ($csvs -eq $null) {
 	}
 
 	if ($prompt -eq "1") {
-		$files += ,"test.csv"
+		$files += ,"solo-workstation.csv"
 	}
 
 } else {
@@ -116,7 +105,7 @@ if ($csvs -eq $null) {
 ### Smazani regsitry klicu
 ##############################################
 
-$deleteFile = "test.csv"
+$deleteFile = "deletion_final.csv"
 
 $data = Import-Csv -Path "$RegistryDeletePath$deleteFile"
 
@@ -179,23 +168,23 @@ $files | ForEach-Object {
 			$CurrentValueData = $LastKey.GetValue($ValueName)
 			
 			if ($CurrentValueData -ne $null) {
-				"exists"
+			
 				if ($CurrentValueData -ne $ValueData) {
-					"wrong value"
+					
 					LogStd "Nastavuji klic $RegPath $ValueName typu $ValueType na hodnotu $ValueData"
 					
 					Set-ItemProperty -Path "$RegPath" -Name "$ValueName" -Value "$ValueData" 2>&1 1>>"$logfullpath"
 					$runSuccessful = $?
 				}
 			} else {
-				"does not exist - no value"
+				
 				LogStd "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData"
 				
 				New-ItemProperty -Path "$RegPath" -Name "$ValueName" -PropertyType "$ValueType" -Value "$ValueData" 2>&1 1>>"$logfullpath"
 				$runSuccessful = $?
 			}
 		} else {
-			"Path does not exist"
+			
 			LogStd "Vytvarim cestu $RegPath"
 			LogStd "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData"
 			
@@ -211,7 +200,7 @@ $files | ForEach-Object {
 ### Aplikace audit policy
 ##############################################
 
-$auditFile = "test.csv"
+$auditFile = "final-audit.csv"
 $AuditBackupFilename = "backup-$date-$guid.txt"
 
 $data = Import-Csv -Path "$AuditAddPath$auditFile"
@@ -251,7 +240,7 @@ echo "..."
 
 $ServicesBackupFilename = ".\backups\services\services_backup-$date-$guid.csv"
 
-$services = Import-Csv -Path ".\data\services\services.csv"
+$services = Import-Csv -Path ".\data\services\services_final.csv"
 
 $services | ForEach-Object {
 		
@@ -296,7 +285,7 @@ echo ">  Aplikuji bezpecnostni nastaveni"
 echo "#####################################"
 echo "..."
 
-$SecDataFile = "sec-data.inf"
+$SecDataFile = "sec-data_final.inf"
 $SecExportFile = "sec-backup-$date-$guid.inf"
 $TmpDir = "tmp-$date-$guid"
 
