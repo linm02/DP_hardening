@@ -1,0 +1,5 @@
+hive,path,value,type,data
+"HKLM","software\Policies\Microsoft\Camera","AllowCamera","Dword","0"
+"HKLM","Software\Microsoft\Windows\CurrentVersion\Policies\Explorer","NoCDBurning","DWord","1"
+"HKLM","Software\Policies\Microsoft\Windows\RemovableStorageDevices","Deny_All","DWord","1"
+"HKCU","SOFTWARE\Policies\Microsoft\SoundRecorder","Soundrec","DWord","1"

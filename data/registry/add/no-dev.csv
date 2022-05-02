@@ -1,0 +1,2 @@
+hive,path,value,type,data
+"HKCU","Software\Microsoft\Windows\CurrentVersion\Policies\System","DisableRegistryTools","DWord","2"
