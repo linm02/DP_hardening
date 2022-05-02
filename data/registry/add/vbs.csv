@@ -1,7 +1,0 @@
-hive,path,value,type,data
-HKLM,Software\Policies\Microsoft\Windows\DeviceGuard,EnableVirtualizationBasedSecurity,DWord,1
-HKLM,Software\Policies\Microsoft\Windows\DeviceGuard,LsaCfgFlags,DWord,1
-HKLM,Software\Policies\Microsoft\Windows\DeviceGuard,HVCIMATRequired,DWord,0
-HKLM,Software\Policies\Microsoft\Windows\DeviceGuard,ConfigureSystemGuardLaunch,DWord,1
-HKLM,Software\Policies\Microsoft\Windows\DeviceGuard,RequirePlatformSecurityFeatures,DWord,1
-HKLM,Software\Policies\Microsoft\Windows\DeviceGuard,HypervisorEnforcedCodeIntegrity,DWord,1

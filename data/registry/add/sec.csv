@@ -1,5 +1,0 @@
-hive,path,value,type,data
-HKLM,SYSTEM\CurrentControlSet\Control\Lsa,NoLMHash,DWord,1
-HKLM,SYSTEM\CurrentControlSet\Control\Lsa,NodsdfssdsdsfLMHash,DWord,1
-HKLM,SYSTEM\CurrentControlSet\Control\Lsa,NodsdfssdsdssdsdfLMHash,DWord,1
-HKLM,SYSTEM\CurrentControlSet\Control\Lsa,NodsdfdssdfLMHash,DWord,1

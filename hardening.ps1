@@ -3,6 +3,10 @@
 # Functions
 #============================================
 
+param(
+    [string[]]$csvs
+)
+
 Function LogStd {
 	Param ($message)
 	echo "$message" 1>>"$logfullpath"
@@ -23,126 +27,17 @@ Function Print-PromptText {
 	Print-Options
 }
 
-##############################################
-### CLI Dialog
-##############################################
-
-# $ErrorActionPreference= 'silentlycontinue'
-# Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI
-# Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name AllowDomainPINLogon -ErrorAction 'silentlycontinue'
-
-# Get-ItemPropertyValue -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI -ErrorAction 'silentlycontinue'
-#Get-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI -ErrorAction "SilentlyContinue"
-# Get-ItemProperty -Path HKLM:\SOFTWARE\Policies\Microsoft\Windows\System -Name DontDisplayNetworkSelectionUI 2>$null
-
-# $files = ".\data.csv",".\test.csv",".\bigmoney.csv"
-# $files = ".\data.csv",".\test.csv"
-
-$q1PromptA = "Pouzivate aktivne PowerShell ke tvorbe skriptu nebo pouzivat jine vyvojarske nastroje? - Zvolte cislo"
-$q1PromptB = "Pokud zvolite ano, bude nastavena volnejsi politika pro spousteni skriptu"
-$q2PromptA = "Je toto zarizeni samostatnou jednoucelovou pracovni stanici? - Zvolte cislo"
-$q2PromptB = "Pokud zvolite ano, bude zakazan mikrofon, kamera a vsechna prenosna zarizeni"
 
 
+##########################################
+### VARIABLES
+##########################################
+
+$q1PromptA = "Je toto zarizeni samostatnou jednoucelovou pracovni stanici? - Zvolte cislo"
+$q1PromptB = "Pokud zvolite ano, bude zakazan mikrofon, kamera a vsechna prenosna zarizeni"
 
 $path = pwd
 $workdir = $path.Path
-
-$RegistryAddPath = ".\data\registry\add\"
-$SecAddPath = ".\data\registry\add\"
-$AuditAddPath = ".\data\audit\"
-$RegistryAddPath = ".\data\registry\add\"
-$RegistryDeletePath = ".\data\registry\delete\"
-
-$files = @()
-$files += ,"sec.csv"
-# $files += ,"multistring.csv"
-
-$runSuccessful = $true
-
-
-### Otazka 1
-echo "$q1PromptA"
-echo "$q1PromptB"
-Print-Options
-
-$prompt = Read-Host "Vlozte cislo"
-
-while (!($prompt -eq "1" -Or $prompt -eq "2")) {
-	Print-PromptText "$q1PromptA","$q1PromptB"
-	$prompt = Read-Host "Vlozte cislo"
-}
-
-if ($prompt -eq "1") {
-	$files += ,"data.csv"
-}
-
-
-### Otazka 2
-echo "$q2PromptA"
-echo "$q2PromptB"
-Print-Options
-
-$prompt = Read-Host "Vlozte cislo"
-
-while (!($prompt -eq "1" -Or $prompt -eq "2")) {
-	Print-PromptText "$q2PromptA","$q2PromptB"
-	$prompt = Read-Host "Vlozte cislo"
-}
-
-if ($prompt -eq "1") {
-	$files += ,"bigmoney.csv"
-}
-
-
-# ### Otazka 3
-# echo "Prejete si zabezpecit PowerShell? - Zvolte cislo"
-# echo "ano - 1"
-# echo "ne - 2"
-
-# $prompt = Read-Host "Vlozte cislo"
-
-# while (!($prompt -eq "1" -Or $prompt -eq "2")) {
-
-	# echo "Nespravny vstup!"
-	
-	# echo "Prejete si zabezpecit PowerShell? - Zvolte cislo"
-	# echo "ano - 1"
-	# echo "ne - 2"
-
-	# $prompt = Read-Host "Vlozte cislo"
-# }
-
-# if ($prompt -eq "1") {
-	# $files += ".\bigmoney.csv"
-# } else {
-	# $files += ".\smallmoney.csv"
-# }
-
-
-# ### Otazka 4
-# echo "Prejete si zabezpecit PowerShell? - Zvolte cislo"
-# echo "ano - 1"
-# echo "ne - 2"
-
-# $prompt = Read-Host "Vlozte cislo"
-
-# while (!($prompt -eq "1" -Or $prompt -eq "2")) {
-
-	# echo "Nespravny vstup!"
-	
-	# echo "Prejete si zabezpecit PowerShell? - Zvolte cislo"
-	# echo "ano - 1"
-	# echo "ne - 2"
-
-	# $prompt = Read-Host "Vlozte cislo"
-# }
-
-# if ($prompt -eq "1") {
-	# $files += ".\bigmoney.csv"
-# } else {
-	# $files += ".\smallmoney.csv"
-# }
 
 
 ### logfile
@@ -153,18 +48,72 @@ $logfilename = "log-$date-$guid.txt"
 $logfullpath = "$workdir/logs/log-$date-$guid.txt"
 
 
+
+$RegistryAddPath = ".\data\registry\add\"
+$SecAddPath = ".\data\registry\add\"
+$AuditAddPath = ".\data\audit\"
+$RegistryAddPath = ".\data\registry\add\"
+$RegistryDeletePath = ".\data\registry\delete\"
+
+$runSuccessful = $true
+
+#### Uvitani
+
+echo "..."
+echo "#############################################"
+echo ">  Spoustite skript pro hardening Windows"
+echo "#############################################"
+echo "..."
+
+
+##################################
+# pokrocily mod preskoci cely CLI Dialog a pouzije pro nove registry klice argumenty jako csv
+##################################
+
+if ($csvs -eq $null) {
+	
+	$files = @()
+	$files += ,"final_reg.csv"
+
+
+	##############################################
+	### CLI Dialog
+	##############################################
+
+
+	### Otazka 1
+	echo "$q1PromptA"
+	echo "$q1PromptB"
+	Print-Options
+
+	$prompt = Read-Host "Vlozte cislo"
+
+	while (!($prompt -eq "1" -Or $prompt -eq "2")) {
+		Print-PromptText "$q1PromptA","$q1PromptB"
+		$prompt = Read-Host "Vlozte cislo"
+	}
+
+	if ($prompt -eq "1") {
+		$files += ,"solo-workstation.csv"
+	}
+
+} else {
+	$files = $csvs
+}
+
 ##############################################
 ### Smazani regsitry klicu
 ##############################################
 
-$deleteFile = "test.csv"
+$deleteFile = "deletion_final.csv"
 
 $data = Import-Csv -Path "$RegistryDeletePath$deleteFile"
 
-	echo "#####################################"
-	echo ">  Mazu klice registru ze souboru $_"
-	echo "#####################################"
-	echo "..."
+echo "..."
+echo "#####################################"
+echo ">  Mazu klice registru ze souboru $_"
+echo "#####################################"
+echo "..."
 
 $data | ForEach-Object {
 	
@@ -198,6 +147,7 @@ $files | ForEach-Object {
 	# $data = Import-Csv -Path .\data.csv
 	$data = Import-Csv -Path "$RegistryAddPath$_"
 
+	echo "..."
 	echo "#####################################"
 	echo ">  Aplikuji klice registru ze souboru $_, muze to chvili trvat..."
 	echo "#####################################"
@@ -218,23 +168,23 @@ $files | ForEach-Object {
 			$CurrentValueData = $LastKey.GetValue($ValueName)
 			
 			if ($CurrentValueData -ne $null) {
-				"exists"
+			
 				if ($CurrentValueData -ne $ValueData) {
-					"wrong value"
+					
 					LogStd "Nastavuji klic $RegPath $ValueName typu $ValueType na hodnotu $ValueData"
 					
 					Set-ItemProperty -Path "$RegPath" -Name "$ValueName" -Value "$ValueData" 2>&1 1>>"$logfullpath"
 					$runSuccessful = $?
 				}
 			} else {
-				"does not exist - no value"
+				
 				LogStd "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData"
 				
 				New-ItemProperty -Path "$RegPath" -Name "$ValueName" -PropertyType "$ValueType" -Value "$ValueData" 2>&1 1>>"$logfullpath"
 				$runSuccessful = $?
 			}
 		} else {
-			"Path does not exist"
+			
 			LogStd "Vytvarim cestu $RegPath"
 			LogStd "Vytvarim klic $RegPath $ValueName typu $ValueType s hodnotou $ValueData"
 			
@@ -250,19 +200,20 @@ $files | ForEach-Object {
 ### Aplikace audit policy
 ##############################################
 
-$auditFile = "test.csv"
+$auditFile = "final-audit.csv"
 $AuditBackupFilename = "backup-$date-$guid.txt"
 
 $data = Import-Csv -Path "$AuditAddPath$auditFile"
 
-	echo "#####################################"
-	echo ">  Aplikuji audit policy"
-	echo "#####################################"
-	echo "..."
+echo "..."
+echo "#####################################"
+echo ">  Aplikuji audit policy"
+echo "#####################################"
+echo "..."
 
- auditpol /get /category:* /r > ".\backups\audit\$AuditBackupFilename"
- echo "> Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
- LogStd "Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
+auditpol /get /category:* /r > ".\backups\audit\$AuditBackupFilename"
+echo "> Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
+LogStd "Vytvarim zalohu aktualnich konfiguraci auditu do: .\backups\audit\$AuditBackupFilename"
 
 $data | ForEach-Object {
 	
@@ -281,6 +232,7 @@ $data | ForEach-Object {
 ### Nastaveni systemovych sluzeb
 ##############################################
 
+echo "..."
 echo "#####################################"
 echo ">  Nastavuji systemove sluzby"
 echo "#####################################"
@@ -288,7 +240,7 @@ echo "..."
 
 $ServicesBackupFilename = ".\backups\services\services_backup-$date-$guid.csv"
 
-$services = Import-Csv -Path ".\data\services\services.csv"
+$services = Import-Csv -Path ".\data\services\services_final.csv"
 
 $services | ForEach-Object {
 		
@@ -296,14 +248,29 @@ $services | ForEach-Object {
 	$Status = "$($_.Status)"
 	$StartupType = "$($_.StartType)"
 	
-	LogStd "Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
-	echo "> Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
-	Get-Service "$ServiceName" | select name,Status,StartType | Export-Csv -Path "$ServicesBackupFilename" -NoTypeInformation -Append
-	$runSuccessful = $?
+	Get-Service "$ServiceName" 2>&1 1> $null
+	$Exists = $?
 	
-	LogStd "Nastavuji startup typ sluzby $ServiceName na $StartupType"
-	Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
-	$runSuccessful = $?
+	if ($Exists) { 	
+		
+		LogStd "Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
+		echo "> Vytvarim zalohu stavu sluzby $ServiceName do: $ServicesBackupFilename"
+		Get-Service "$ServiceName" | select name,Status,StartType | Export-Csv -Path "$ServicesBackupFilename" -NoTypeInformation -Append
+		$runSuccessful = $?
+		
+		#Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+		# Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+		
+		LogStd "Nastavuji startup typ sluzby $ServiceName na $StartupType"
+		
+		if ("$StartupType" -eq "disabled") {
+			Get-Service -Name "$ServiceName" | Stop-Service -Force
+			$runSuccessful = $?
+		} else {
+			Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
+			$runSuccessful = $?
+		}
+	}
 }
 
 
@@ -312,12 +279,13 @@ $services | ForEach-Object {
 ##############################################
 
 
+echo "..."
 echo "#####################################"
 echo ">  Aplikuji bezpecnostni nastaveni"
 echo "#####################################"
 echo "..."
 
-$SecDataFile = "sec-data.inf"
+$SecDataFile = "sec-data_final.inf"
 $SecExportFile = "sec-backup-$date-$guid.inf"
 $TmpDir = "tmp-$date-$guid"
 
@@ -345,11 +313,17 @@ rm -r "$TmpDir"
 ###################################################
 
 if ($runSuccessful) {
+	echo "#"
+	echo "#"
+	echo "#"
 	echo "#####################################"
 	echo ">  Skript uspesne dokoncen, dekujeme za pouziti, zaznam o behu najdete v souboru .\logs\$logfilename"
 	echo ">  Pro aplikovani vsech nastaveni by mel byt pocitac nyni restartovan"
 	echo "#####################################"
 } else {
+	echo "#"
+	echo "#"
+	echo "#"
 	echo "#####################################"
 	echo ">  Pri behu skriptu se vyskytly chyby, detaily najdete v souboru .\logs\$logfilename"
 	echo "#####################################"
