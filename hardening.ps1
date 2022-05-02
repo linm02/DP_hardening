@@ -43,10 +43,8 @@ Function Print-PromptText {
 ### VARIABLES
 ##########################################
 
-$q1PromptA = "Pouzivate aktivne PowerShell ke tvorbe skriptu nebo pouzivat jine vyvojarske nastroje? - Zvolte cislo"
-$q1PromptB = "Pokud zvolite ano, bude nastavena volnejsi politika pro spousteni skriptu"
-$q2PromptA = "Je toto zarizeni samostatnou jednoucelovou pracovni stanici? - Zvolte cislo"
-$q2PromptB = "Pokud zvolite ano, bude zakazan mikrofon, kamera a vsechna prenosna zarizeni"
+$q1PromptA = "Je toto zarizeni samostatnou jednoucelovou pracovni stanici? - Zvolte cislo"
+$q1PromptB = "Pokud zvolite ano, bude zakazan mikrofon, kamera a vsechna prenosna zarizeni"
 
 $path = pwd
 $workdir = $path.Path
@@ -69,6 +67,15 @@ $RegistryDeletePath = ".\data\registry\delete\"
 
 $runSuccessful = $true
 
+#### Uvitani
+
+echo "..."
+echo "#############################################"
+echo ">  Spoustite skript pro hardening Windows"
+echo "#############################################"
+echo "..."
+
+
 ##################################
 # pokrocily mod preskoci cely CLI Dialog a pouzije pro nove registry klice argumenty jako csv
 ##################################
@@ -78,16 +85,6 @@ if ($csvs -eq $null) {
 	$files = @()
 	$files += ,"sec.csv"
 	# $files += ,"multistring.csv"
-
-
-	#### Uvitani
-
-
-	echo "..."
-	echo "#############################################"
-	echo ">  Spoustite skript pro hardening Windows"
-	echo "#############################################"
-	echo "..."
 
 
 	##############################################
@@ -108,27 +105,9 @@ if ($csvs -eq $null) {
 	}
 
 	if ($prompt -eq "1") {
-		$files += ,"dev.csv"
-	} else {
-		$files += ,"no-dev.csv"
+		$files += ,"test.csv"
 	}
 
-
-	### Otazka 2
-	echo "$q2PromptA"
-	echo "$q2PromptB"
-	Print-Options
-
-	$prompt = Read-Host "Vlozte cislo"
-
-	while (!($prompt -eq "1" -Or $prompt -eq "2")) {
-		Print-PromptText "$q2PromptA","$q2PromptB"
-		$prompt = Read-Host "Vlozte cislo"
-	}
-
-	if ($prompt -eq "1") {
-		$files += ,"solo-workstation.csv"
-	}
 } else {
 	$files = $csvs
 }
