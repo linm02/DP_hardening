@@ -275,7 +275,7 @@ $services | ForEach-Object {
 		LogStd "Nastavuji startup typ sluzby $ServiceName na $StartupType"
 		
 		if ("$StartupType" -eq "disabled") {
-			Get-Service -Name "$ServiceName" | Stop-Service
+			Get-Service -Name "$ServiceName" | Stop-Service -Force
 			$runSuccessful = $?
 		} else {
 			Set-Service -Name "$ServiceName" -Status "$Status" -StartupType "$StartupType"
