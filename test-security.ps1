@@ -4,8 +4,8 @@
 
 
 
-$SecDataFile = "sec-data.inf"
-$SecExportFile = "sec-export92.inf"
+$SecDataFile = "sec-data_final.inf"
+$SecExportFile = "sec-export922.inf"
 
 mkdir "blabla"
 cd "blabla"
